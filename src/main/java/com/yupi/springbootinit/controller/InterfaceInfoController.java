@@ -16,6 +16,7 @@ import com.yupi.springbootinit.model.dto.interfaceInfo.InterfaceInfoQueryRequest
 import com.yupi.springbootinit.model.dto.interfaceInfo.InterfaceInfoUpdateRequest;
 import com.yupi.springbootinit.model.entity.InterfaceInfo;
 import com.yupi.springbootinit.model.entity.User;
+import com.yupi.springbootinit.model.vo.InterfaceInfoVo;
 import com.yupi.springbootinit.service.InterfaceInfoService;
 import com.yupi.springbootinit.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -140,7 +141,7 @@ public class InterfaceInfoController {
      * @return
      */
     @GetMapping("/get/vo")
-    public BaseResponse<InterfaceInfoVO> getInterfaceInfoVOById(long id, HttpServletRequest request) {
+    public BaseResponse<InterfaceInfoVo> getInterfaceInfoVOById(long id, HttpServletRequest request) {
         if (id <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -148,7 +149,7 @@ public class InterfaceInfoController {
         if (InterfaceInfo == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
-        return ResultUtils.success(InterfaceInfoService.getInterfaceInfoVO(InterfaceInfo, request));
+        return ResultUtils.success((InterfaceInfoVo) InterfaceInfoService.getInterfaceInfoVO(InterfaceInfo, request));
     }
 
     /**
@@ -159,7 +160,7 @@ public class InterfaceInfoController {
      * @return
      */
     @PostMapping("/list/page/vo")
-    public BaseResponse<Page<InterfaceInfoVO>> listInterfaceInfoVOByPage(@RequestBody InterfaceInfoQueryRequest InterfaceInfoQueryRequest,
+    public BaseResponse<Page<InterfaceInfoVo>> listInterfaceInfoVOByPage(@RequestBody InterfaceInfoQueryRequest InterfaceInfoQueryRequest,
             HttpServletRequest request) {
         long current = InterfaceInfoQueryRequest.getCurrent();
         long size = InterfaceInfoQueryRequest.getPageSize();
@@ -167,7 +168,7 @@ public class InterfaceInfoController {
         ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
         Page<InterfaceInfo> InterfaceInfoPage = InterfaceInfoService.page(new Page<>(current, size),
                 InterfaceInfoService.getQueryWrapper(InterfaceInfoQueryRequest));
-        return ResultUtils.success(InterfaceInfoService.getInterfaceInfoVOPage(InterfaceInfoPage, request));
+        return ResultUtils.success((Page<InterfaceInfoVo>) InterfaceInfoService.getInterfaceInfoVOPage(InterfaceInfoPage, request));
     }
 
     /**
@@ -178,7 +179,7 @@ public class InterfaceInfoController {
      * @return
      */
     @PostMapping("/my/list/page/vo")
-    public BaseResponse<Page<InterfaceInfoVO>> listMyInterfaceInfoVOByPage(@RequestBody InterfaceInfoQueryRequest InterfaceInfoQueryRequest,
+    public BaseResponse<Page<InterfaceInfoVo>> listMyInterfaceInfoVOByPage(@RequestBody InterfaceInfoQueryRequest InterfaceInfoQueryRequest,
             HttpServletRequest request) {
         if (InterfaceInfoQueryRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -191,7 +192,7 @@ public class InterfaceInfoController {
         ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
         Page<InterfaceInfo> InterfaceInfoPage = InterfaceInfoService.page(new Page<>(current, size),
                 InterfaceInfoService.getQueryWrapper(InterfaceInfoQueryRequest));
-        return ResultUtils.success(InterfaceInfoService.getInterfaceInfoVOPage(InterfaceInfoPage, request));
+        return ResultUtils.success((Page<InterfaceInfoVo>) InterfaceInfoService.getInterfaceInfoVOPage(InterfaceInfoPage, request));
     }
 
     // endregion
@@ -212,10 +213,7 @@ public class InterfaceInfoController {
         }
         InterfaceInfo InterfaceInfo = new InterfaceInfo();
         BeanUtils.copyProperties(InterfaceInfoEditRequest, InterfaceInfo);
-        List<String> tags = InterfaceInfoEditRequest.getTags();
-        if (tags != null) {
-            InterfaceInfo.setTags(GSON.toJson(tags));
-        }
+
         // 参数校验
         InterfaceInfoService.validInterfaceInfo(InterfaceInfo, false);
         User loginUser = userService.getLoginUser(request);
