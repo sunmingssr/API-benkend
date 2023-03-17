@@ -123,10 +123,6 @@ public class InterfaceInfoController {
         BeanUtils.copyProperties(InterfaceInfoUpdateRequest, InterfaceInfo);
 
 
-        List<String> tags = InterfaceInfoUpdateRequest.getTags();
-        if (tags != null) {
-            InterfaceInfo.setTags(GSON.toJson(tags));
-        }
         // 参数校验
         InterfaceInfoService.validInterfaceInfo(InterfaceInfo, false);
         long id = InterfaceInfoUpdateRequest.getId();
